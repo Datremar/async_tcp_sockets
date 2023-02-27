@@ -15,16 +15,17 @@ class _ServerHandler:
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self._HOST, self._PORT))
-            s.listen()
-            conn, addr = s.accept()
-            with conn:
-                print(f"Connected by {addr}")
-                while True:
+            while True:
+                s.listen()
+                conn, addr = s.accept()
+
+                with conn:
+                    print(f"Connected by {addr}")
+
                     data = conn.recv(1024)
-                    if not data:
-                        break
-                    print(data)
-                    conn.sendall(data)
+
+                    result = _ServerHandler.solve(data.decode(encoding="utf-8"))
+                    conn.sendall(result.encode(encoding="utf-8"))
 
 
 class Server:
@@ -38,4 +39,4 @@ class Server:
 
 
 if __name__ == "__main__":
-    print(type(eval("2 - 1.3")))
+    Server().run()
