@@ -1,7 +1,7 @@
 import socket
 
 
-class ServerHandler:
+class _ServerHandler:
     _HOST = "127.0.0.1"
     _PORT = 65432
 
@@ -32,7 +32,7 @@ class Server:
 
     def __new__(cls, *args, **kwargs):
         if not Server._instance:
-            Server._instance = ServerHandler()
+            Server._instance = _ServerHandler()
 
         return Server._instance
 
