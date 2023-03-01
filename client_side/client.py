@@ -1,15 +1,25 @@
 import socket
+
 from sys import argv
 
+from utils import Request, Response
 
-HOST = "127.0.0.1"
-PORT = 65432
+
+class Client:
+    _HOST = "127.0.0.1"
+    _PORT = 65432
+
+    def request(self, expression: str):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            request = Request({
+                "expression": expression
+            })
+
+            s.connect((self._HOST, self._PORT))
+            s.sendall(request)
+
+            return Response(s.recv(1024))
+
 
 if __name__ == "__main__":
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        expression = argv[1]
-        s.connect((HOST, PORT))
-        s.sendall(expression.encode(encoding="utf-8"))
-        data = s.recv(1024)
-
-    print("{}".format(data.decode(encoding="utf-8")))
+    print(Client().request(argv[1]))
