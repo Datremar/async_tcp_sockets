@@ -1,5 +1,7 @@
 import socket
 
+from server_side.utils import Request, Response
+
 
 class _ServerHandler:
     _HOST = "127.0.0.1"
@@ -10,22 +12,30 @@ class _ServerHandler:
         return str(eval(expression))
 
     def __init__(self):
-        pass
+        self.running = True
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self._HOST, self._PORT))
-            while True:
+            while self.running:
                 s.listen()
                 conn, addr = s.accept()
 
                 with conn:
                     print(f"Connected by {addr}")
 
-                    data = conn.recv(1024)
+                    request = Request(conn.recv(1024))
+                    result = _ServerHandler.solve(request["expression"])
 
-                    result = _ServerHandler.solve(data.decode(encoding="utf-8"))
-                    conn.sendall(result.encode(encoding="utf-8"))
+                    conn.sendall(Response(
+                        {
+                            "response": result,
+                            "status": 200
+                        }
+                    ))
+
+    def terminate(self):
+        self.running = False
 
 
 class Server:
@@ -36,7 +46,3 @@ class Server:
             Server._instance = _ServerHandler()
 
         return Server._instance
-
-
-if __name__ == "__main__":
-    Server().run()
