@@ -3,13 +3,13 @@ import asyncio
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
 
-from .utils import Request, Response
+from utils import Request, Response
 
 
 class Client:
     _HOST = "127.0.0.1"
     _PORT = 65432
-    semaphore = asyncio.Semaphore(value=250)
+    semaphore = asyncio.Semaphore(value=500)
 
     async def request(self, expression: str):
         async with Client.semaphore:
@@ -25,7 +25,7 @@ class Client:
             await loop.sock_connect(s, (self._HOST, self._PORT))
             await loop.sock_sendall(s, request)
 
-            return Response(await loop.sock_recv(s, 1024))
+            return Response(await loop.sock_recv(s, 100000))
 
 
 if __name__ == "__main__":
