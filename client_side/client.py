@@ -1,5 +1,6 @@
 import asyncio
 
+from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv
 
 from .utils import Request, Response
