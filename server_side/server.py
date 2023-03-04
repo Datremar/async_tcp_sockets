@@ -146,7 +146,8 @@ class _ServerHandler:
                 }
             ))
 
-        logging.info("Closing client {}:{}".format(addr[0], addr[1]))
+        logging.info("Closing connection with client {}:{}".format(addr[0], addr[1]))
+        server.close()
 
     async def run(self):
         server = await asyncio.start_server(
