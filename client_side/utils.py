@@ -2,7 +2,7 @@ from json import dumps, loads
 
 
 class Request:
-    def __new__(cls, payload) -> bytes:
+    def __new__(cls, payload: dict) -> bytes:
         return dumps(payload).encode(encoding="utf-8")
 
 
