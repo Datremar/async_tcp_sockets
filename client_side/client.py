@@ -30,23 +30,21 @@ class Client:
     async def request(self, expression: str):
         logging.info("Making request {} to: {}:{}".format(expression, Client._HOST, Client._PORT))
         async with self._semaphore:
-            loop = asyncio.get_event_loop()
-
-            s = socket(AF_INET, SOCK_STREAM)
-            s.setblocking(False)
+            reader, writer = await asyncio.open_connection(Client._HOST, Client._PORT)
 
             request = Request({
                 "expression": expression
             })
 
-            await loop.sock_connect(s, (self._HOST, self._PORT))
-            await loop.sock_sendall(s, request)
+            writer.write(request)
+            await writer.drain()
 
-            response = Response(await loop.sock_recv(s, 100000))
-            logging.info("Getting response: {} from {}:{}".format(dumps(response), Client._HOST, Client._PORT))
+            response = Response(await reader.read(10000))
+            logging.info("Got response: {} from {}:{}".format(dumps(response), Client._HOST, Client._PORT))
 
             logging.info("Closing connection with {}:{}".format(Client._HOST, Client._PORT))
-            s.close()
+            writer.close()
+            await writer.wait_closed()
 
             return response
 
