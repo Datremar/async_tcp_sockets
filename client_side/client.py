@@ -43,8 +43,9 @@ class Client:
             await loop.sock_sendall(s, request)
 
             response = Response(await loop.sock_recv(s, 100000))
-
             logging.info("Getting response: {} from {}:{}".format(dumps(response), Client._HOST, Client._PORT))
+
+            logging.info("Closing connection with {}:{}".format(Client._HOST, Client._PORT))
             s.close()
 
             return response
