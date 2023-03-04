@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-from json import JSONDecodeError, dumps
+from json import JSONDecodeError, dumps, loads
 
-from utils import Request, Response
+from .utils import Request, Response
 
 
 class _ServerHandler:
@@ -129,7 +129,9 @@ class _ServerHandler:
                     )
 
                     logging.debug(
-                        "request {} yields the result: {}".format(dumps(request), dumps(response.decode(encoding="utf-8")))
+                        "request {} yields the result: {}".format(
+                            dumps(request),
+                            dumps(loads(response.decode(encoding="utf-8"))))
                     )
 
                     await _ServerHandler.send_response(server, response)
@@ -143,6 +145,8 @@ class _ServerHandler:
                     "status": 500
                 }
             ))
+
+        logging.info("Closing client {}:{}".format(addr[0], addr[1]))
 
     async def run(self):
         server = await asyncio.start_server(
